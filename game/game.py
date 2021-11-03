@@ -6,14 +6,14 @@ from .player import Player
 from .point import Point
 
 class Game:
-    def __init__(self, win):
-        self.win = win
+    def __init__(self, win:pygame.Surface):
+        self.win:pygame.Surface = win
         self._init()
         self.board:Board = Board(win)
     
-    def select(self, point_num):
+    def select(self, point_num: int):
         if self.selected:
-            if self.board.points[point_num] in self.board.legal_moves:
+            if point_num + 1 in self.board.legal_moves:
                 pass
 
     def update(self):

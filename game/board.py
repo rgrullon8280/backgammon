@@ -1,7 +1,7 @@
 import pygame
-from pygame import draw
 from .constants import WIDTH, HEIGHT, NUM_OF_POINTS,COLOR_ONE, COLOR_TWO
 from .point import Point
+from typing import List
 import os
 
 WOOD_PICTURE = pygame.image.load(os.path.join('assets','wood.jpeg'))
@@ -9,9 +9,9 @@ SCALED_WOOD = pygame.transform.scale(WOOD_PICTURE,(WIDTH,HEIGHT))
 
 class Board:
     def __init__(self, WIN: pygame.Surface):
-       self.win = WIN
-       self.points = []
-       self.is_blocked = False
+       self.win:pygame.Surface = WIN
+       self.points:List[Point] = []
+       self.is_blocked: bool = False
        self._init_points()
        self.draw_board()
     
@@ -63,3 +63,6 @@ class Board:
         for point in self.points:
             pygame.draw.polygon(self.win,COLOR_ONE if point.number % 2 == 0 else COLOR_TWO,[(point.x1,point.y1), (point.x2,point.y2), (point.x3,point.y3)])
             point.draw_checkers(self.win)
+
+    def calc_legal_moves(self,player,current_point, new_point):
+        pass

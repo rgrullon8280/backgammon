@@ -1,7 +1,8 @@
+from typing import Tuple
 from .constants import HEIGHT, WIDTH
 
 class Checker:
-    def __init__(self, diameter, prim_color,sec_color, x):
+    def __init__(self, diameter: float, prim_color: Tuple[int,int,int],sec_color: Tuple[int,int,int], x: float) -> None:
         self.outer_radius = diameter / 2
         self.inner_radius = self.outer_radius - 5
         self.prim_color = prim_color
@@ -9,8 +10,8 @@ class Checker:
         self.x = x
         self.y = 0
     
-    def calc_y(self,num_of_checker,num_of_point,point_y):
-        y = 0
+    def calc_y(self,num_of_checker: int,num_of_point: int,point_y:float) -> None:
+        y:int = 0
         if num_of_point < 13:
             if num_of_checker == 14:
                 y = point_y - (3 * self.outer_radius * 2) + self.outer_radius

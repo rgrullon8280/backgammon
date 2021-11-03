@@ -2,11 +2,12 @@ import pygame
 from pygame.event import get
 from game.constants import BAR_WIDTH, LEFT_BOARD_MAX_X, RIGHT_BOARD_MIN_X, SIZE, TOP_ROW_MAX_HEIGHT, TOP_ROW_MIN_HEIGHT, WIDTH, HEIGHT
 from game.game import Game
+from typing import Tuple
 
-FPS = 60
-WIN = pygame.display.set_mode(SIZE)
+FPS:int = 60
+WIN:pygame.Surface = pygame.display.set_mode(SIZE)
 
-def get_coor_from_mouse_click(pos):
+def get_coor_from_mouse_click(pos:Tuple[float, float]):
     x, y = pos
     if x > LEFT_BOARD_MAX_X and x<RIGHT_BOARD_MIN_X:
         pass
@@ -22,9 +23,9 @@ def get_coor_from_mouse_click(pos):
             return 6+int((LEFT_BOARD_MAX_X - x)/(LEFT_BOARD_MAX_X/6))
 
 def main():
-    running = True
-    clock = pygame.time.Clock()
-    game = Game(WIN)
+    running:bool = True
+    clock:pygame.time.Clock = pygame.time.Clock()
+    game:Game = Game(WIN)
     while running:
         clock.tick(FPS)
         
