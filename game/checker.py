@@ -3,13 +3,25 @@ from .constants import HEIGHT, WIDTH
 
 class Checker:
     def __init__(self, diameter: float, prim_color: Tuple[int,int,int],sec_color: Tuple[int,int,int], x: float) -> None:
-        self.outer_radius = diameter / 2
-        self.inner_radius = self.outer_radius - 5
-        self.prim_color = prim_color
-        self.sec_color = sec_color
-        self.x = x
-        self.y = 0
+        self.outer_radius:float = diameter / 2
+        self.inner_radius:float = self.outer_radius - 5
+        self.prim_color:Tuple[int,int,int] = prim_color
+        self.sec_color:Tuple[int,int,int] = sec_color
+        self.x:float = x
+        self.y:float = 0.0
     
+    def move_to(self,point):
+        FPS = 15
+        x_step:float = (self.x - point.x3)/FPS
+        new_y:float = self.calc_y(len(point.checkers),point.number,point.y1)
+        y_step:float = (self.y - new_y)/FPS
+        while self.x < point.x3 and self.y < new_y:
+            self.x += x_step
+            self.y += y_step
+        
+
+
+
     def calc_y(self,num_of_checker: int,num_of_point: int,point_y:float) -> None:
         y:int = 0
         if num_of_point < 13:
@@ -40,5 +52,4 @@ class Checker:
             else:
                 y = point_y + ((num_of_checker + 1) * self.outer_radius * 2) - self.outer_radius
         
-        self.y = y
-        return self
+        return y
