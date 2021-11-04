@@ -2,7 +2,7 @@ from typing import List, Tuple
 import pygame
 from game.Destination import Destination
 
-from game.constants import COLOR_ONE, COLOR_TWO
+from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT
 from game.die import Die
 from game.movetype import MoveType
 from .board import Board
@@ -57,8 +57,16 @@ class Game:
         else:
             self.turn = self.player_one
       
+    def draw_dice(self):
+        for die in self.player_one.dice:
+            die.draw(self.win)
+        for die in self.player_two.dice:
+            die.draw(self.win)
+
 
     def update(self):
+        self.board.draw_board()
+        self.draw_dice()
         pygame.display.update()
     
     def reset(self):
@@ -76,7 +84,6 @@ class Game:
 
         die_one_value = self.player_one.dice[0].number
         die_two_value = self.player_two.dice[0].number
-        self.board.draw_dice(self.player_one,self.player_two)
         player: Player = self.player_one if die_one_value > die_two_value else self.player_two
         player.dice[0].toggle()
         return player
@@ -84,8 +91,8 @@ class Game:
 
     def _init(self):
         self.selected:Point = None
-        self.player_one:Player = Player(COLOR_ONE,[Die(),Die()])
-        self.player_two:Player = Player(COLOR_TWO,[Die(),Die()])
+        self.player_one:Player = Player(COLOR_ONE,[Die((DICE_1_X,DICE_2_X)),Die((DICE_2_X,DICE_3_X))])
+        self.player_two:Player = Player(COLOR_TWO,[Die((DICE_3_X,DICE_4_X)),Die((DICE_4_X,DICE_HEIGHT))])
         self.legal_moves:dict[int, Tuple[MoveType, Destination]]
         self.board:Board = Board(self.win)
         

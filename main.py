@@ -36,9 +36,9 @@ def main():
                 break
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 point_num:int = get_coor_from_mouse_click(pygame.mouse.get_pos())
-                game.select(point_num)
+                # game.select(point_num)
              
-            game.update()
+        game.update()
 
 
 if __name__ == '__main__':
