@@ -1,8 +1,9 @@
 from typing import List, Tuple
 import pygame
 from game.Destination import Destination
+from game.bar import Bar
 
-from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT
+from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT, DICE_Y
 from game.die import Die
 from game.movetype import MoveType
 from .board import Board
@@ -15,19 +16,31 @@ class Game:
         self._init()
     
     def select(self, point_num:int):
-        
+        if not self.turn.dice[0].enabled and not self.turn.dice[1].enabled:
+            self.next_turn()
+        self.turn.has_checkers_on_bar = self.board.bar.has_checkers_on_bar(self.turn)
         if point_num is None:
             return
         dest:Destination = self.board.points[point_num]
         if self.selected:
             if dest in self.legal_moves:
-                self.board.move_checker(self.selected, dest)
-                self.turn.dice[self.legal_moves[dest][1]]
-                self.next_turn()
-        
-        if dest.checker_color == self.turn.checker_color:
-            self.selected = dest
+                move_type, idx = self.legal_moves[dest]
+                self.board.execute_move(move_type, dest,self.selected)
+                if idx == 2:
+                    self.turn.dice[0].toggle()
+                    self.turn.dice[1].toggle()
+                else:
+                    self.turn.dice[idx].toggle()
+                
+                
+        else:
+            if self.turn.has_checkers_on_bar:
+                self.selected = self.board.bar
+            
+            elif dest.checker_color == self.turn.checker_color:
+                self.selected = dest
             self.get_legal_moves()
+          
 
     def get_legal_moves(self):
         for idx, die in enumerate(self.turn.dice):
@@ -39,7 +52,7 @@ class Game:
 
 
     def validate_move(self,num:int) -> Tuple[MoveType,Destination]:
-        if self.board.bar.has_checkers_on_bar(self.turn):
+        if self.turn.has_checkers_on_bar:
             new_num:int = (num * self.turn.direction*-1) - 1
             new_point = self.board.points[new_num]
             if new_point.checker_color == self.turn.checker_color:
@@ -49,14 +62,14 @@ class Game:
             else:
                 return (MoveType.ILLEGAL_MOVE, new_point)
 
-        new_num:int = self.selected.number + (num * self.turn.direction)
+        new_num:int = (self.selected.number-1) + (num * self.turn.direction)
         points:List[Point] = self.board.points
         if new_num > len(points) or new_num < 0:
             if self.turn.ready_to_bear_off:
                 return (MoveType.BEAR_OFF, self.board.Bar)
 
         new_point = self.board.points[new_num]
-        if new_point.checker_color == self.turn.checker_color:
+        if new_point.checker_color == self.turn.checker_color or new_point.checker_color is None:
             return (MoveType.LEGAL_MOVE,new_point)
         elif not new_point.is_blocked:
             return (MoveType.HIT,new_point)
@@ -68,6 +81,8 @@ class Game:
             self.turn = self.player_two
         else:
             self.turn = self.player_one
+        self.turn.dice[0].toggle()
+        self.turn.dice[1].toggle()
       
     def draw_dice(self):
         for die in self.player_one.dice:
@@ -102,10 +117,10 @@ class Game:
 
 
     def _init(self):
-        self.selected:Point = None
-        self.player_one:Player = Player(COLOR_ONE,[Die((DICE_1_X,DICE_2_X)),Die((DICE_2_X,DICE_3_X))],1)
-        self.player_two:Player = Player(COLOR_TWO,[Die((DICE_3_X,DICE_4_X)),Die((DICE_4_X,DICE_HEIGHT))],-1)
-        self.legal_moves:dict[Destination, Tuple[MoveType, int]]
+        self.selected:Destination = None
+        self.player_one:Player = Player(COLOR_TWO,[Die((DICE_3_X,DICE_Y)),Die((DICE_4_X,DICE_Y))],-1)
+        self.player_two:Player = Player(COLOR_ONE,[Die((DICE_1_X,DICE_Y)),Die((DICE_2_X,DICE_Y))],1)
+        self.legal_moves:dict[Destination, Tuple[MoveType, int]] = {}
         self.board:Board = Board(self.win)
         
         self.turn:Player = self.start_roll()

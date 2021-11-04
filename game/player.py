@@ -9,6 +9,7 @@ class Player:
         self.score = 0
         self.dice: List[Die] = dice
         self.ready_to_bear_off: bool = False
+        self.has_checkers_on_bar: bool = False
         self.direction:int = direction
 
     def roll_dice(self):

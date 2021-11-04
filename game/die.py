@@ -16,7 +16,7 @@ class Die:
         self.enabled:bool = False
 
     def toggle(self):
-        return not self.enabled
+        self.enabled = not self.enabled
 
     def draw(self, win: pygame.Surface):
         win.blit(self.image,(self.x,self.y))
