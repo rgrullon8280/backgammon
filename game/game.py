@@ -62,7 +62,7 @@ class Game:
             else:
                 return (MoveType.ILLEGAL_MOVE, new_point)
 
-        new_num:int = (self.selected.number-1) + (num * self.turn.direction)
+        new_num:int = (self.selected.number + self.turn.direction) + (num * self.turn.direction)
         points:List[Point] = self.board.points
         if new_num > len(points) or new_num < 0:
             if self.turn.ready_to_bear_off:
@@ -83,6 +83,8 @@ class Game:
             self.turn = self.player_one
         self.turn.dice[0].toggle()
         self.turn.dice[1].toggle()
+        self.selected = None
+        self.legal_moves = {}
       
     def draw_dice(self):
         for die in self.player_one.dice:
