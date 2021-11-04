@@ -7,7 +7,7 @@ from typing import Tuple
 FPS:int = 60
 WIN:pygame.Surface = pygame.display.set_mode(SIZE)
 
-def get_coor_from_mouse_click(pos:Tuple[float, float]):
+def get_coor_from_mouse_click(pos:Tuple[float, float]) -> int:
     x, y = pos
     if x > LEFT_BOARD_MAX_X and x<RIGHT_BOARD_MIN_X:
         pass
@@ -38,7 +38,7 @@ def main():
                 point_num:int = get_coor_from_mouse_click(pygame.mouse.get_pos())
                 game.select(point_num)
              
-            game.update()
+        game.update()
 
 
 if __name__ == '__main__':
