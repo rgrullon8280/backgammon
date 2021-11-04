@@ -27,10 +27,13 @@ class Game:
             if point.checker_color == self.turn.checker_color:
                 self.selected = point
                 self.board.calc_legal_moves(self.turn,self.selected)
+
     def get_legal_moves(self):
         for idx, die in enumerate(self.turn.dice):
             if die.enabled:
-                self.validate_move(die.number)
+                self.legal_moves[idx] = self.validate_move(die.number)
+        if self.turn.dice[0].enabled and self.turn.dice[1].enabled:
+            self.legal_moves[2] = self.validate_move(self.turn.dice[0].number + self.turn.dice[1].number)
 
 
     def validate_move(self,num:int) -> Tuple[MoveType,Destination]:
@@ -38,7 +41,7 @@ class Game:
         points:List[Point] = self.board.points
         if new_num > len(points):
             if self.turn.ready_to_bear_off:
-                return MoveType.BEAR_OFF 
+                return (MoveType.BEAR_OFF, self.board.Bar)
 
         new_point = self.board.points[new_num]
         if new_point.checker_color == self.turn.checker_color:
@@ -83,6 +86,7 @@ class Game:
         self.selected:Point = None
         self.player_one:Player = Player(COLOR_ONE,[Die(),Die()])
         self.player_two:Player = Player(COLOR_TWO,[Die(),Die()])
+        self.legal_moves:dict[int, Tuple[MoveType, Destination]]
         self.board:Board = Board(self.win)
         
         self.turn:Player = self.start_roll()
