@@ -2,18 +2,20 @@ from typing import Tuple
 from .constants import HEIGHT, WIDTH
 
 class Checker:
-    def __init__(self, diameter: float, prim_color: Tuple[int,int,int],sec_color: Tuple[int,int,int], x: float) -> None:
+    def __init__(self, diameter: float, prim_color: Tuple[int,int,int],sec_color: Tuple[int,int,int], x: float, num_of_point:int) -> None:
         self.outer_radius:float = diameter / 2
         self.inner_radius:float = self.outer_radius - 5
         self.prim_color:Tuple[int,int,int] = prim_color
         self.sec_color:Tuple[int,int,int] = sec_color
         self.x:float = x
         self.y:float = 0.0
+        self.num_of_point: int = num_of_point
     
     def move_to(self,point):
         FPS = 15
+        self.num_of_point = point.number
         x_step:float = (self.x - point.x3)/FPS
-        new_y:float = self.calc_y(len(point.checkers),point.number,point.y1)
+        new_y:float = self.calc_y(len(point.checkers),point.y1)
         y_step:float = (self.y - new_y)/FPS
         while self.x < point.x3 and self.y < new_y:
             self.x += x_step
@@ -22,8 +24,9 @@ class Checker:
 
 
 
-    def calc_y(self,num_of_checker: int,num_of_point: int,point_y:float) -> None:
+    def calc_y(self,num_of_checker: int,point_y:float) -> None:
         y:int = 0
+        num_of_point = self.num_of_point
         if num_of_point < 13:
             if num_of_checker == 14:
                 y = point_y - (3 * self.outer_radius * 2) + self.outer_radius

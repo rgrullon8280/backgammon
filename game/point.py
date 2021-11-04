@@ -1,10 +1,13 @@
 import pygame
+
+from game.Destination import Destination
 from .constants import WIDTH, HEIGHT, NUM_OF_POINTS, BAR_WIDTH, MID_HEIGHT
 from .checker import Checker
 from typing import List, Tuple
 
-class Point:
+class Point(Destination):
     def __init__(self, num: int, num_of_checkers:int, prim_color:Tuple[int,int,int],sec_color:Tuple[int,int,int]) -> None:
+        super(Point, self).__init__()
         self.number = num + 1
         
         
@@ -37,11 +40,11 @@ class Point:
     def _init_checkers(self, num:int, prim_color:Tuple[int,int,int], sec_color:Tuple[int,int,int]):
         self.checkers:List[Checker] = []
         for _ in range(num):
-            self.checkers.append(Checker(self.width,prim_color,sec_color,self.x3))
+            self.checkers.append(Checker(self.width,prim_color,sec_color,self.x3, self.number))
     
     def draw_checkers(self, win: pygame.Surface):
         for idx, checker in enumerate(self.checkers):
-            checker.y = checker.calc_y(idx,self.number, self.y1)
+            checker.y = checker.calc_y(idx, self.y1)
             pygame.draw.circle(win, checker.sec_color, (checker.x, checker.y),checker.outer_radius)
             pygame.draw.circle(win, checker.prim_color, (checker.x, checker.y),checker.inner_radius)
     
