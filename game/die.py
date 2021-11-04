@@ -11,9 +11,14 @@ class Die:
     def __init__(self) -> None:
         self.number:int = 1
         self.get_die_image()
+        self.enabled:bool = False
+
+    def toggle(self):
+        return not self.enabled
     
     def roll(self) -> None:
         self.number = random.randint(1,6)
+        self.get_die_image()
     
     def get_die_image(self) -> None:
         self.image = pygame.transform.scale(pygame.image.load(os.path.join('assets',f'dice{self.number}.png')),(DICE_HEIGHT, DICE_WIDTH))
