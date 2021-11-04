@@ -15,41 +15,53 @@ class Game:
         self._init()
     
     def select(self, point_num:int):
-        print(self.selected)
+        
         if point_num is None:
             return
-        point:Point = self.board.points[point_num]
+        dest:Destination = self.board.points[point_num]
         if self.selected:
-            if point in self.board.legal_moves:
-                self.board.move_checker(self.selected, point)
+            if dest in self.legal_moves:
+                self.board.move_checker(self.selected, dest)
+                self.turn.dice[self.legal_moves[dest][1]]
                 self.next_turn()
-        else:
-            if point.checker_color == self.turn.checker_color:
-                self.selected = point
-                self.board.calc_legal_moves(self.turn,self.selected)
+        
+        if dest.checker_color == self.turn.checker_color:
+            self.selected = dest
+            self.get_legal_moves()
 
     def get_legal_moves(self):
         for idx, die in enumerate(self.turn.dice):
             if die.enabled:
-                self.legal_moves[idx] = self.validate_move(die.number)
+                move_type, dest = self.validate_move(die.number)
+                self.legal_moves[dest] = (move_type,idx)
         if self.turn.dice[0].enabled and self.turn.dice[1].enabled:
             self.legal_moves[2] = self.validate_move(self.turn.dice[0].number + self.turn.dice[1].number)
 
 
     def validate_move(self,num:int) -> Tuple[MoveType,Destination]:
-        new_num:int = self.selected.number + num
+        if self.board.bar.has_checkers_on_bar(self.turn):
+            new_num:int = (num * self.turn.direction*-1) - 1
+            new_point = self.board.points[new_num]
+            if new_point.checker_color == self.turn.checker_color:
+                return (MoveType.LEGAL_MOVE,new_point)
+            elif not new_point.is_blocked:
+                return (MoveType.HIT,new_point)
+            else:
+                return (MoveType.ILLEGAL_MOVE, new_point)
+
+        new_num:int = self.selected.number + (num * self.turn.direction)
         points:List[Point] = self.board.points
-        if new_num > len(points):
+        if new_num > len(points) or new_num < 0:
             if self.turn.ready_to_bear_off:
                 return (MoveType.BEAR_OFF, self.board.Bar)
 
         new_point = self.board.points[new_num]
         if new_point.checker_color == self.turn.checker_color:
-            return MoveType.LEGAL_MOVE
+            return (MoveType.LEGAL_MOVE,new_point)
         elif not new_point.is_blocked:
-            return MoveType.HIT
+            return (MoveType.HIT,new_point)
         else:
-            return MoveType.ILLEGAL_MOVE
+            return (MoveType.ILLEGAL_MOVE, new_point)
 
     def next_turn(self):
         if self.turn == self.player_one:
@@ -91,9 +103,9 @@ class Game:
 
     def _init(self):
         self.selected:Point = None
-        self.player_one:Player = Player(COLOR_ONE,[Die((DICE_1_X,DICE_2_X)),Die((DICE_2_X,DICE_3_X))])
-        self.player_two:Player = Player(COLOR_TWO,[Die((DICE_3_X,DICE_4_X)),Die((DICE_4_X,DICE_HEIGHT))])
-        self.legal_moves:dict[int, Tuple[MoveType, Destination]]
+        self.player_one:Player = Player(COLOR_ONE,[Die((DICE_1_X,DICE_2_X)),Die((DICE_2_X,DICE_3_X))],1)
+        self.player_two:Player = Player(COLOR_TWO,[Die((DICE_3_X,DICE_4_X)),Die((DICE_4_X,DICE_HEIGHT))],-1)
+        self.legal_moves:dict[Destination, Tuple[MoveType, int]]
         self.board:Board = Board(self.win)
         
         self.turn:Player = self.start_roll()

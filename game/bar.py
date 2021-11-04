@@ -11,6 +11,9 @@ class Bar:
             COLOR_TWO: []
         }
     
+    def draw_checkers(self):
+        pass
+    
 
     def has_checkers_on_bar(self, player: Player) -> bool:
         return len(self.checkers[player.checker_color]) > 0

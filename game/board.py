@@ -1,5 +1,6 @@
 
 import pygame
+from game.bar import Bar
 
 from game.player import Player
 from .constants import BAR_WIDTH, LEFT_BOARD_MAX_X, WIDTH, HEIGHT, NUM_OF_POINTS,COLOR_ONE, COLOR_TWO, BLACK
@@ -22,7 +23,23 @@ class Board:
        self.win:pygame.Surface = WIN
        self.points:List[Point] = []
        self.is_blocked: bool = False
+       self.avail_moves:dict[MoveType,function] = {
+           MoveType.LEGAL_MOVE == self.move,
+           MoveType.HIT == self.hit,
+           MoveType.BEAR_OFF == self.bear_off,
+           MoveType.RE_ENTER == self.re_enter
+       }
+       self.bar = Bar()
        self._init_points()
+    
+    def move(self):
+        pass
+    def hit(self):
+        pass
+    def bear_off(self):
+        pass
+    def re_enter(self):
+        pass
     
     def _init_points(self):
         for num in range(NUM_OF_POINTS):
@@ -70,13 +87,16 @@ class Board:
              
     
     def draw_bar(self):
-        pygame.draw.rect(self.win, BLACK, (LEFT_BOARD_MAX_X,0,BAR_WIDTH,HEIGHT),1)
+        pygame.draw.rect(self.win, BLACK, (LEFT_BOARD_MAX_X,0,BAR_WIDTH,HEIGHT),5)
 
     def draw_points(self):
         for point in self.points:
             pygame.draw.polygon(self.win,COLOR_ONE if point.number % 2 == 0 else COLOR_TWO,[(point.x1,point.y1), (point.x2,point.y2), (point.x3,point.y3)])
             point.draw_checkers(self.win)
 
+    def execute_move(self, move_type:MoveType):
+        move = self.avail_moves[move_type]
+        move()
     
 
     def move_checker(self, current_point:Point,dest_point:Point):
