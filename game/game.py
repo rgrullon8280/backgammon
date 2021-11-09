@@ -3,13 +3,15 @@ import pygame
 from game.Destination import Destination
 from game.bar import Bar
 
-from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT, DICE_Y
+from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT, DICE_Y, HEIGHT, WIDTH
 from game.die import Die
 from game.movetype import MoveType
 from .board import Board
 from .player import Player
 from .point import Point
 
+pygame.font.init()
+my_font = pygame.font.SysFont('Helvetica',30)
 class Game:
     def __init__(self, win:pygame.Surface):
         self.win:pygame.Surface = win
@@ -29,6 +31,8 @@ class Game:
                     self.turn.dice[1].toggle()
                 else:
                     self.turn.dice[idx].toggle()
+            elif dest == self.selected:
+                self.selected = None
                 
                 
         else:
@@ -96,8 +100,13 @@ class Game:
     def update(self):
         self.board.draw_board()
         self.draw_dice()
+        self.draw_turn_indicator()
         pygame.display.update()
     
+    def draw_turn_indicator(self):
+        text_surface: pygame.Surface = my_font.render(str(self.turn), False,(255,0,0))       
+        self.win.blit(text_surface,(HEIGHT/2,WIDTH/2))
+
     def reset(self):
         self._init()
     

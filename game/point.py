@@ -33,6 +33,7 @@ class Point(Destination):
     def add_checker(self, checker: Checker):
         self.checkers.append(checker)
         self.check_blocked()
+        self.check_checker_color()
 
     def remove_checker(self) -> Checker:
         return self.checkers.pop()
