@@ -16,8 +16,6 @@ class Game:
         self._init()
     
     def select(self, point_num:int):
-        if not self.turn.dice[0].enabled and not self.turn.dice[1].enabled:
-            self.next_turn()
         self.turn.has_checkers_on_bar = self.board.bar.has_checkers_on_bar(self.turn)
         if point_num is None:
             return
@@ -39,9 +37,10 @@ class Game:
             
             elif dest.checker_color == self.turn.checker_color:
                 self.selected = dest
+            else:
+                return
             self.get_legal_moves()
           
-
     def get_legal_moves(self):
         for idx, die in enumerate(self.turn.dice):
             if die.enabled:
@@ -49,7 +48,8 @@ class Game:
                 self.legal_moves[dest] = (move_type,idx)
         if self.turn.dice[0].enabled and self.turn.dice[1].enabled:
             self.legal_moves[2] = self.validate_move(self.turn.dice[0].number + self.turn.dice[1].number)
-
+        elif not self.turn.dice[0].enabled and not self.turn.dice[1].enabled:
+            self.next_turn()
 
     def validate_move(self,num:int) -> Tuple[MoveType,Destination]:
         if self.turn.has_checkers_on_bar:
@@ -62,7 +62,7 @@ class Game:
             else:
                 return (MoveType.ILLEGAL_MOVE, new_point)
 
-        new_num:int = (self.selected.number + self.turn.direction) + (num * self.turn.direction)
+        new_num:int = (self.selected.number - 1) + (num * self.turn.direction)
         points:List[Point] = self.board.points
         if new_num > len(points) or new_num < 0:
             if self.turn.ready_to_bear_off:
