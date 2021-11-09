@@ -3,21 +3,21 @@ import pygame
 from game.Destination import Destination
 from game.bar import Bar
 
-from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT, DICE_Y
+from game.constants import COLOR_ONE, COLOR_TWO, DICE_1_X, DICE_2_X, DICE_3_X, DICE_4_X, DICE_HEIGHT, DICE_Y, HEIGHT, WIDTH
 from game.die import Die
 from game.movetype import MoveType
 from .board import Board
 from .player import Player
 from .point import Point
 
+pygame.font.init()
+my_font = pygame.font.SysFont('Helvetica',30)
 class Game:
     def __init__(self, win:pygame.Surface):
         self.win:pygame.Surface = win
         self._init()
     
     def select(self, point_num:int):
-        if not self.turn.dice[0].enabled and not self.turn.dice[1].enabled:
-            self.next_turn()
         self.turn.has_checkers_on_bar = self.board.bar.has_checkers_on_bar(self.turn)
         if point_num is None:
             return
@@ -31,6 +31,8 @@ class Game:
                     self.turn.dice[1].toggle()
                 else:
                     self.turn.dice[idx].toggle()
+            elif dest == self.selected:
+                self.selected = None
                 
                 
         else:
@@ -39,9 +41,10 @@ class Game:
             
             elif dest.checker_color == self.turn.checker_color:
                 self.selected = dest
+            else:
+                return
             self.get_legal_moves()
           
-
     def get_legal_moves(self):
         for idx, die in enumerate(self.turn.dice):
             if die.enabled:
@@ -49,7 +52,8 @@ class Game:
                 self.legal_moves[dest] = (move_type,idx)
         if self.turn.dice[0].enabled and self.turn.dice[1].enabled:
             self.legal_moves[2] = self.validate_move(self.turn.dice[0].number + self.turn.dice[1].number)
-
+        elif not self.turn.dice[0].enabled and not self.turn.dice[1].enabled:
+            self.next_turn()
 
     def validate_move(self,num:int) -> Tuple[MoveType,Destination]:
         if self.turn.has_checkers_on_bar:
@@ -62,7 +66,7 @@ class Game:
             else:
                 return (MoveType.ILLEGAL_MOVE, new_point)
 
-        new_num:int = (self.selected.number-1) + (num * self.turn.direction)
+        new_num:int = (self.selected.number - 1) + (num * self.turn.direction)
         points:List[Point] = self.board.points
         if new_num > len(points) or new_num < 0:
             if self.turn.ready_to_bear_off:
@@ -83,6 +87,8 @@ class Game:
             self.turn = self.player_one
         self.turn.dice[0].toggle()
         self.turn.dice[1].toggle()
+        self.selected = None
+        self.legal_moves = {}
       
     def draw_dice(self):
         for die in self.player_one.dice:
@@ -94,8 +100,13 @@ class Game:
     def update(self):
         self.board.draw_board()
         self.draw_dice()
+        self.draw_turn_indicator()
         pygame.display.update()
     
+    def draw_turn_indicator(self):
+        text_surface: pygame.Surface = my_font.render(str(self.turn), False,(255,0,0))       
+        self.win.blit(text_surface,(HEIGHT/2,WIDTH/2))
+
     def reset(self):
         self._init()
     

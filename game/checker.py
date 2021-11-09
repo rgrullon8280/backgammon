@@ -12,14 +12,9 @@ class Checker:
         self.num_of_point: int = num_of_point
     
     def move_to(self,point):
-        FPS = 15
         self.num_of_point = point.number
-        x_step:float = (self.x - point.x3)/FPS
-        new_y:float = self.calc_y(len(point.checkers),point.y1)
-        y_step:float = (self.y - new_y)/FPS
-        while self.x < point.x3 and self.y < new_y:
-            self.x += x_step
-            self.y += y_step
+        self.x = point.x3
+        self.y = self.calc_y(len(point.checkers),point.y1)
         
 
 

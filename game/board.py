@@ -105,7 +105,6 @@ class Board:
         dest_point.add_checker(checker)
         checker.move_to(dest_point)
         
-        
 
 
 
